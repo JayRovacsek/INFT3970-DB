@@ -1,11 +1,11 @@
 /*
+DROP TABLE Sensor
 DROP TABLE CustomerAddress
-DROP TABLE Customer
 DROP TABLE CustomerPassword
+DROP TABLE Customer
 DROP TABLE Temperature
 DROP TABLE Humidity
 DROP TABLE Motion
-DROP TABLE Sensor
 */
 
 CREATE TABLE CustomerAddress (
@@ -50,7 +50,7 @@ GO
 
 CREATE TABLE Temperature (
 SensorID	INT NOT NULL,
-Temp		FLOAT(24),
+Temp		DECIMAL(3,2),
 Date		TIMESTAMP,
 Foreign Key (SensorID) References Sensor (SensorID) ON UPDATE CASCADE ON DELETE NO ACTION
 )
@@ -58,7 +58,7 @@ GO
 
 CREATE TABLE Humidity (
 SensorID	INT NOT NULL,
-Humidity	FLOAT(24),
+Humidity	DECIMAL(3,2),
 Date		TIMESTAMP,
 Foreign Key (SensorID) References Sensor (SensorID) ON UPDATE CASCADE ON DELETE NO ACTION
 )
