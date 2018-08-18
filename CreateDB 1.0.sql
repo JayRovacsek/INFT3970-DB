@@ -50,16 +50,16 @@ GO
 
 CREATE TABLE Temperature (
 SensorID	INT NOT NULL,
-Temp		DECIMAL(3,2),
-Date		TIMESTAMP,
+Temp		DECIMAL(10,2),
+Date		DATETIME,
 Foreign Key (SensorID) References Sensor (SensorID) ON UPDATE CASCADE ON DELETE NO ACTION
 )
 GO
 
 CREATE TABLE Humidity (
 SensorID	INT NOT NULL,
-Humidity	DECIMAL(3,2),
-Date		TIMESTAMP,
+Humidity	DECIMAL(10,2),
+Date		DATETIME,
 Foreign Key (SensorID) References Sensor (SensorID) ON UPDATE CASCADE ON DELETE NO ACTION
 )
 GO
@@ -67,7 +67,7 @@ GO
 CREATE TABLE Motion (
 SensorID	INT NOT NULL,
 Motion		BIT,
-Date		TIMESTAMP,
+Date		DATETIME,
 Foreign Key (SensorID) References Sensor (SensorID) ON UPDATE CASCADE ON DELETE NO ACTION
 )
 GO
