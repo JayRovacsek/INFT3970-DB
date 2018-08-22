@@ -20,9 +20,9 @@ Country			VARCHAR(30)
 GO
 
 CREATE TABLE CustomerPassword (
-CustomerID	INT NOT NULL,
-PasswordID	INT PRIMARY KEY NOT NULL IDENTITY(1,1),
-Password	VARCHAR(64) NOT NULL
+CustomerID	INT NOT NULL PRIMARY KEY,
+Password	VARCHAR(64) NOT NULL,
+foreign key (CustomerID) references Customer (CustomerID) ON UPDATE CASCADE ON DELETE NO ACTION
 )
 GO
 
@@ -32,10 +32,8 @@ fName			VARCHAR(30) NOT NULL,
 lName			VARCHAR(20) NOT NULL,
 ContactNumber	VARCHAR(10),
 Email			VARCHAR(50) NOT NULL,
-PasswordID		INT NOT NULL,
 AddressID		INT NOT NULL,
 Foreign Key (AddressID) References CustomerAddress (AddressID) ON UPDATE CASCADE ON DELETE NO ACTION,
-Foreign Key (PasswordID) References CustomerPassword (PasswordID) ON UPDATE CASCADE ON DELETE NO ACTION
 )
 GO
 
