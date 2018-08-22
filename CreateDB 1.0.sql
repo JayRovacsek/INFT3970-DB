@@ -21,7 +21,7 @@ GO
 
 CREATE TABLE CustomerPassword (
 CustomerID	INT NOT NULL PRIMARY KEY,
-Password	VARCHAR(64) NOT NULL
+Password	VARCHAR(64) NOT NULL,
 foreign key (CustomerID) references Customer (CustomerID) ON UPDATE CASCADE ON DELETE NO ACTION
 )
 GO
