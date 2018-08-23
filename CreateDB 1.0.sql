@@ -42,7 +42,9 @@ CustomerID	INT NOT NULL,
 SensorID	INT PRIMARY KEY NOT NULL IDENTITY(1,1),
 Name		VARCHAR(50) NOT NULL,
 Description VARCHAR(200) NOT NULL,
-Foreign Key (CustomerID) References Customer (CustomerID) ON UPDATE CASCADE ON DELETE NO ACTION
+RoomID		INt NOT NULL, 
+Foreign Key (CustomerID) References Customer (CustomerID) ON UPDATE CASCADE ON DELETE NO ACTION,
+Foreign Key (RoomID) References Room (RoomID) ON UPDATE CASCADE ON DELETE NO ACTION
 )
 GO
 
@@ -76,8 +78,6 @@ GO
 CREATE TABLE Room (
 RoomID INT PRIMARY KEY NOT NULL,
 Name VARCHAR(50),
-Description VARCHAR(200),
-SensorID INT NOT NULL,
-Foreign Key (SensorID) References Sensor (SensorID) ON UPDATE CASCADE ON DELETE NO ACTION
+Description VARCHAR(200)
 )
 GO
