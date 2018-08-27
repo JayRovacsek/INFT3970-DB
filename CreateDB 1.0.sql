@@ -9,13 +9,14 @@ DROP TABLE Motion
 */
 
 CREATE TABLE CustomerAddress (
-AddressID		INT PRIMARY KEY NOT NULL,
+CustomerID	    INT NOT NULL PRIMARY KEY,
 StreetNum		VARCHAR(10),
 StreetName		VARCHAR(50),
 Postcode		VARCHAR(5),
 City			VARCHAR(30),
 State			VARCHAR(3),
 Country			VARCHAR(30)	
+foreign key (CustomerID) references Customer (CustomerID) ON UPDATE CASCADE ON DELETE NO ACTION
 )
 GO
 
@@ -31,9 +32,7 @@ CustomerID		INT PRIMARY KEY NOT NULL IDENTITY(1,1),
 fName			VARCHAR(30) NOT NULL,
 lName			VARCHAR(20) NOT NULL,
 ContactNumber	VARCHAR(10),
-Email			VARCHAR(50) NOT NULL,
-AddressID		INT NOT NULL,
-Foreign Key (AddressID) References CustomerAddress (AddressID) ON UPDATE CASCADE ON DELETE NO ACTION,
+Email			VARCHAR(50) NOT NULL
 )
 GO
 
@@ -51,8 +50,8 @@ GO
 CREATE TABLE Temperature (
 TempID INT PRIMARY KEY NOT NULL,
 SensorID	INT NOT NULL,
-Temp		DECIMAL(3,2),
-Date		TIMESTAMP,
+Temp		DECIMAL(10,2),
+Date		DATETIME,
 Foreign Key (SensorID) References Sensor (SensorID) ON UPDATE CASCADE ON DELETE NO ACTION
 )
 GO
@@ -60,8 +59,8 @@ GO
 CREATE TABLE Humidity (
 HumidityID INT PRIMARY KEY NOT NULL,
 SensorID	INT NOT NULL,
-Humidity	DECIMAL(3,2),
-Date		TIMESTAMP,
+Humidity	DECIMAL(10,2),
+Date		DATETIME,
 Foreign Key (SensorID) References Sensor (SensorID) ON UPDATE CASCADE ON DELETE NO ACTION
 )
 GO
@@ -70,7 +69,7 @@ CREATE TABLE Motion (
 MotionID INT PRIMARY KEY NOT NULL,
 SensorID	INT NOT NULL,
 Motion		BIT,
-Date		TIMESTAMP,
+Date		DATETIME,
 Foreign Key (SensorID) References Sensor (SensorID) ON UPDATE CASCADE ON DELETE NO ACTION
 )
 GO
