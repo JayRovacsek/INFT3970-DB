@@ -9,13 +9,14 @@ DROP TABLE Motion
 */
 
 CREATE TABLE CustomerAddress (
-AddressID		INT PRIMARY KEY NOT NULL,
+CustomerID	    INT NOT NULL PRIMARY KEY,
 StreetNum		VARCHAR(10),
 StreetName		VARCHAR(50),
 Postcode		VARCHAR(5),
 City			VARCHAR(30),
 State			VARCHAR(3),
 Country			VARCHAR(30)	
+foreign key (CustomerID) references Customer (CustomerID) ON UPDATE CASCADE ON DELETE NO ACTION
 )
 GO
 
