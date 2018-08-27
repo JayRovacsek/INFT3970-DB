@@ -32,9 +32,7 @@ CustomerID		INT PRIMARY KEY NOT NULL IDENTITY(1,1),
 fName			VARCHAR(30) NOT NULL,
 lName			VARCHAR(20) NOT NULL,
 ContactNumber	VARCHAR(10),
-Email			VARCHAR(50) NOT NULL,
-AddressID		INT NOT NULL,
-Foreign Key (AddressID) References CustomerAddress (AddressID) ON UPDATE CASCADE ON DELETE NO ACTION,
+Email			VARCHAR(50) NOT NULL
 )
 GO
 
