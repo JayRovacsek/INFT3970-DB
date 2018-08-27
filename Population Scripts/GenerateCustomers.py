@@ -1,3 +1,5 @@
+#!/usr/bin/env python3.7
+
 import json
 import random
 import secrets
@@ -86,7 +88,7 @@ def generate_sql(number_of_records):
         
         address_sql = """
         INSERT INTO CustomerAddress (
-            [AddressID],
+            [CustomerID],
             [StreetNum],
             [StreetName],
             [Postcode],
@@ -121,15 +123,12 @@ def generate_sql(number_of_records):
  	        '{}',
             '{}',
             '{}',
-            '{}',
-            {},
-            {});""".format(
+            '{}');""".format(
                 record.details.firstname,
                 record.details.lastname,
                 record.details.contact_number,
-                record.details.email,
-                i,
-                i)
+                record.details.email
+                )
 
         with open('Generated SQL Scripts/customer_generation.sql',"a") as f:
             f.write(password_sql)
