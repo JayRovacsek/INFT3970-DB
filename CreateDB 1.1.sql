@@ -12,21 +12,21 @@ DROP TABLE Room
 
 CREATE TABLE Customer (
 CustomerID		INT PRIMARY KEY NOT NULL IDENTITY(1,1),
-fName			VARCHAR(40) ,
-lName			VARCHAR(40) ,
-ContactNumber	VARCHAR(10),
-Email			VARCHAR(50)
+fName			VARCHAR(40) NOT NULL ,
+lName			VARCHAR(40) NOT NULL ,
+ContactNumber	VARCHAR(10) NOT NULL,
+Email			VARCHAR(50) NOT NULL
 )
 GO
 
 CREATE TABLE CustomerAddress (
 CustomerID	    INT PRIMARY KEY NOT NULL,
-StreetNum		VARCHAR(10),
-StreetName		VARCHAR(50),
-City			VARCHAR(30),
-State			VARCHAR(3),
-Postcode		VARCHAR(5),
-Country			VARCHAR(30),
+StreetNum		VARCHAR(10) NOT NULL,
+StreetName		VARCHAR(50) NOT NULL,
+City			VARCHAR(30) NOT NULL,
+State			VARCHAR(3)  NOT NULL,
+Postcode		VARCHAR(5)  NOT NULL,
+Country			VARCHAR(30) NOT NULL,
 foreign key (CustomerID) references Customer (CustomerID) ON UPDATE CASCADE ON DELETE NO ACTION
 )
 GO
@@ -91,18 +91,18 @@ DROP PROC dbo.uspAddUser
  */
 
 CREATE PROC dbo.uspAddUser
-	@fName			VARCHAR(40), 
-    @lName			VARCHAR(40), 
-	@ContactNumber	VARCHAR(10),
-	@Email			VARCHAR(50),
-	@StreetNum		VARCHAR(10),
-	@StreetName		VARCHAR(50),
-	@Postcode		VARCHAR(5),
-	@City			VARCHAR(30),
-	@State			VARCHAR(3),
-	@Country		VARCHAR(30),
-	@HashedPassword	VARCHAR(256),
-    @responseMessage NVARCHAR(250) OUTPUT
+	@fName			 VARCHAR(40), 
+    @lName			 VARCHAR(40), 
+	@ContactNumber	 VARCHAR(10),
+	@Email			 VARCHAR(50),
+	@StreetNum		 VARCHAR(10),
+	@StreetName		 VARCHAR(50),
+	@Postcode		 VARCHAR(5),
+	@City			 VARCHAR(30),
+	@State			 VARCHAR(3),
+	@Country		 VARCHAR(30),
+	@HashedPassword	 VARCHAR(256),
+    @responseMessage VARCHAR(250) OUTPUT
 
 
 AS
@@ -131,7 +131,7 @@ BEGIN
 END
 GO
 
-DECLARE @responseMessage NVARCHAR(250)
+DECLARE @responseMessage VARCHAR(250)
 
 EXEC dbo.uspAddUser
 
@@ -147,7 +147,6 @@ EXEC dbo.uspAddUser
 		@Country = 'aust',
 		@HashedPassword	= 'browny20323',
         @responseMessage=@responseMessage OUTPUT
-
 
 
 
