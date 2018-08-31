@@ -114,7 +114,7 @@ Begin
  set @tempPassword = i.password from inserted i;
  set @salt = i.Salt from inserted i;
  Insert into CustomerPassword (Password)
- Values (HASHBYTES('SHA2_256', @tempPassword+CAST(@salt AS NVARCHAR(32));
+ Values (HASHBYTES('SHA2_256', @tempPassword+CAST(@salt AS VARCHAR(32));
 End
 go
 
