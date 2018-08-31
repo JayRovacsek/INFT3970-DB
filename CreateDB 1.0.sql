@@ -8,6 +8,7 @@ DROP TABLE Humidity
 DROP TABLE Motion
 DROP TABLE Room 
 DROP TRIGGER New_Customer_Address_and_Salt
+DROP TRIGGER Hash_Password
 */
 
 
@@ -33,9 +34,9 @@ foreign key (CustomerID) references Customer (CustomerID) ON UPDATE CASCADE ON D
 GO
 
 CREATE TABLE CustomerPassword (
-CustomerID	INT NOT NULL PRIMARY KEY,
-Password	VARCHAR(256) NOT NULL,
-Salt		VARCHAR(32)
+CustomerID		INT NOT NULL PRIMARY KEY,
+HashedPassword	NVARCHAR(256) NOT NULL,
+Salt			NVARCHAR(32)
 foreign key (CustomerID) references Customer (CustomerID) ON UPDATE CASCADE ON DELETE NO ACTION
 )
 GO
@@ -99,7 +100,7 @@ Begin
  select @ID= i.CustomerID from inserted i;
  insert into CustomerAddress (CustomerID)
  values (@ID);
- insert into CustomerPassword (CustomerID, Password, Salt)
+ insert into CustomerPassword (CustomerID, HashedPassword, Salt)
  Values (@ID,'temporarypassword', @salt);
 End
 go
@@ -109,12 +110,15 @@ AFTER UPDATE
 as
 Begin
  Set nocount on 
- Declare @salt varchar(32);
+ Declare @salt nvarchar(32);
  Declare @tempPassword char(64);
- set @tempPassword = i.password from inserted i;
- set @salt = i.Salt from inserted i;
- Insert into CustomerPassword (Password)
- Values (HASHBYTES('SHA2_256', @tempPassword+CAST(@salt AS VARCHAR(32));
+ Declare @ID int;
+ set @ID = (select CustomerID from inserted);
+ set @tempPassword = (select HashedPassword from inserted);
+ set @salt = (select Salt from inserted);
+ UPDATE CustomerPassword
+ Set HashedPassword = ( HASHBYTES('SHA2_256', @tempPassword+CAST(@salt AS NVARCHAR(32))))
+ Where CustomerID = @ID;
 End
 go
 
@@ -126,3 +130,6 @@ select * from customer
 select * from CustomerPassword
 select * from CustomerAddress
 
+UPDATE CustomerPassword
+SET HashedPassword = 'HelloWorld'
+WHERE CustomerID = 1;
