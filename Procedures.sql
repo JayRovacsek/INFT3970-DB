@@ -12,8 +12,8 @@ DROP PROC dbo.AddAdmin
  /* Creating a new user */
 CREATE PROC dbo.AddUser
 	@fName			 VARCHAR(40), 
-    @lName			 VARCHAR(40), 
-	@ContactNumber	 VARCHAR(10),
+    	@lName			 VARCHAR(40), 
+	@ContactNumber	 	 VARCHAR(10),
 	@Email			 VARCHAR(50),
 	@StreetNum		 VARCHAR(10),
 	@StreetName		 VARCHAR(50),
@@ -21,8 +21,8 @@ CREATE PROC dbo.AddUser
 	@City			 VARCHAR(30),
 	@State			 VARCHAR(3),
 	@Country		 VARCHAR(30),
-	@HashedPassword	 VARCHAR(256),
-    @responseMessage VARCHAR(250) OUTPUT
+	@HashedPassword	 	 VARCHAR(256),
+    	@responseMessage 	 VARCHAR(250) OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON
@@ -145,10 +145,6 @@ BEGIN
 	END
 END
 GO
-
-
-
-
 
 /* 
 Running the Proc's
