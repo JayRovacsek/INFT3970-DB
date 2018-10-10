@@ -90,7 +90,7 @@ GO
 CREATE PROC dbo.UserLogin
 	@Email			 VARCHAR(50),
 	@Password		 VARCHAR(256),
-	@responseMessage VARCHAR(250) OUTPUT
+	@responseMessage Bool OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON
@@ -100,11 +100,11 @@ BEGIN
 		SET @UserID = (SELECT UserID FROM Users WHERE email = @Email)
 		SET @Salt = (SELECT Salt FROM UsersPassword WHERE UserID = @UserID)
 		IF (@UserID IS NULL)
-			SET @responseMessage='Invalid login Details'
+			SET @responseMessage= False
 		ELSE IF (HASHBYTES('SHA2_512', @Password+CAST(@Salt AS NVARCHAR(64)))) = (SELECT HashedPassword FROM UsersPassword WHERE @UserID = UserID)
 			SET @responseMessage = 'Login Successful'
 		ELSE
-			SET @responseMessage = 'Wrong Password' 
+			SET @responseMessage = True 
 	END
 END
 GO
