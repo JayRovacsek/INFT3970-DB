@@ -1,19 +1,18 @@
-/* DROPPING PROCS
 
+/* DROPPING PROCS
 DROP PROC dbo.AddUser
 DROP PROC dbo.UserLogin
 DROP PROC dbo.UpdatingUserPassword
 DROP PROC dbo.AddSensor
 DROP PROC dbo.ModifySensor
 DROP PROC dbo.AddAdmin
-
 */
 
  /* Creating a new user */
 CREATE PROC dbo.AddUser
 	@fName			 VARCHAR(40), 
-    	@lName			 VARCHAR(40), 
-	@ContactNumber	 	 VARCHAR(10),
+    @lName			 VARCHAR(40), 
+	@ContactNumber	 VARCHAR(10),
 	@Email			 VARCHAR(50),
 	@StreetNum		 VARCHAR(10),
 	@StreetName		 VARCHAR(50),
@@ -21,8 +20,8 @@ CREATE PROC dbo.AddUser
 	@City			 VARCHAR(30),
 	@State			 VARCHAR(3),
 	@Country		 VARCHAR(30),
-	@HashedPassword	 	 VARCHAR(256),
-    	@responseMessage 	 VARCHAR(250) OUTPUT
+	@HashedPassword	 VARCHAR(256),
+    @responseMessage VARCHAR(250) OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON
@@ -90,18 +89,18 @@ GO
 CREATE PROC dbo.UserLogin
 	@Email			 VARCHAR(50),
 	@Password		 VARCHAR(256),
-	@responseMessage Bit OUTPUT
+	@responseMessage VARCHAR(50) OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON
 	DECLARE @UserID INT
 	DECLARE @Salt	VARCHAR(64)
+	DECLARE @SaltedPassword VARBINARY(64)
     BEGIN
-		SET @UserID = (SELECT UserID FROM Users WHERE email = @Email)
+		SET @UserID = (SELECT UserID FROM Users WHERE  Email = @Email)
 		SET @Salt = (SELECT Salt FROM UsersPassword WHERE UserID = @UserID)
-		IF (@UserID IS NULL)
-			SET @responseMessage= 0
-		ELSE IF (HASHBYTES('SHA2_512', @Password+CAST(@Salt AS NVARCHAR(64)))) = (SELECT HashedPassword FROM UsersPassword WHERE @UserID = UserID)
+		SET @SaltedPassword = HASHBYTES('SHA2_256', @Password+CAST(@Salt AS VARCHAR(64)))
+		IF  @SaltedPassword = (SELECT HashedPassword FROM UsersPassword WHERE @UserID = UserID)
 			SET @responseMessage = 1
 		ELSE
 			SET @responseMessage = 0 
@@ -186,8 +185,8 @@ DECLARE @responseMessage VARCHAR(250)
 
 EXEC dbo.UpdatingUserPassword
 
-	@Email	= 'mr_123@hotmail.com',
-	@Password = 'Browny1',
+	@Email	= 'Browny@hotmail.com',
+	@Password = '1234',
 	@responseMessage=@responseMessage OUTPUT
 GO
 
