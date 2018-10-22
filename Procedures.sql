@@ -6,6 +6,7 @@ DROP PROC dbo.UpdatingUserPassword
 DROP PROC dbo.AddSensor
 DROP PROC dbo.ModifySensor
 DROP PROC dbo.AddAdmin
+DROP PROC dbo.AddRoom
 */
 
  /* Creating a new user */
@@ -121,6 +122,22 @@ BEGIN
     BEGIN
         INSERT INTO Sensor(UserID, Name, Description,RoomID)
         VALUES(@UserID, @Name, @Description, @RoomID)
+        SET @responseMessage='Success'
+    END 
+END
+GO
+
+--Creating a new sensor 
+CREATE PROC dbo.AddRoom
+	@Name			 VARCHAR(50),
+	@Description	 VARCHAR(200),
+    @responseMessage VARCHAR(250) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON
+    BEGIN
+        INSERT INTO Room(Name, Description)
+        VALUES(@Name, @Description)
         SET @responseMessage='Success'
     END 
 END
