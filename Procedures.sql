@@ -127,8 +127,9 @@ BEGIN
 END
 GO
 
---Creating a new sensor 
+--Creating a new Room
 CREATE PROC dbo.AddRoom
+	@NewRoomID		INT,
 	@Name			 VARCHAR(50),
 	@Description	 VARCHAR(200),
     @responseMessage VARCHAR(250) OUTPUT
@@ -136,8 +137,9 @@ AS
 BEGIN
     SET NOCOUNT ON
     BEGIN
-        INSERT INTO Room(Name, Description)
-        VALUES(@Name, @Description)
+		SET @NewRoomID = (SELECT COUNT(RoomID) FROM Room) + 1
+        INSERT INTO Room(RoomID,Name, Description)
+        VALUES(@NewRoomID, @Name, @Description)
         SET @responseMessage='Success'
     END 
 END
