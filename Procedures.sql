@@ -7,6 +7,7 @@ DROP PROC dbo.AddSensor
 DROP PROC dbo.ModifySensor
 DROP PROC dbo.AddAdmin
 DROP PROC dbo.AddRoom
+DROP PROC dbo.UpdateUser
 */
 
  /* Creating a new user */
@@ -163,6 +164,36 @@ BEGIN
 	END
 END
 GO
+
+-- Update User Details 
+CREATE PROC dbo.UpdateUser
+	@UserID			 INT,
+	@fName			 VARCHAR(40), 
+    @lName			 VARCHAR(40), 
+	@ContactNumber	 VARCHAR(10),
+	@StreetNum		 VARCHAR(10),
+	@StreetName		 VARCHAR(50),
+	@Postcode		 VARCHAR(5),
+	@City			 VARCHAR(30),
+	@State			 VARCHAR(3),
+	@Country		 VARCHAR(30),
+    @responseMessage VARCHAR(250) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON
+    BEGIN
+		UPDATE Users
+		SET fName = @fName, lName = @lName, ContactNumber = @ContactNumber
+		WHERE UserID = @UserID
+		UPDATE UsersAddress
+		SET StreetNum = @StreetNum, StreetName = @StreetName, City = @city, State = @State, Postcode = @Postcode, Country = @Country
+		WHERE UserID = @UserID
+        SET @responseMessage='Success'
+    END 
+END
+GO
+
+
 
 /* 
 Running the Proc's
