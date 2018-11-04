@@ -8,6 +8,7 @@ DROP PROC dbo.ModifySensor
 DROP PROC dbo.AddAdmin
 DROP PROC dbo.AddRoom
 DROP PROC dbo.UpdateUser
+Drop Proc dbo.AverageTemp
 */
 
  /* Creating a new user */
@@ -193,13 +194,96 @@ BEGIN
 END
 GO
 
+drop proc dbo.Average 
 
+-- averaging scores
+CREATE PROC dbo.Average
+	@Hours				INT,
+	@SensorId			INT,
+	@UserId				INT,
+	@responseMessage	VARCHAR(250) OUTPUT
+
+AS 
+BEGIN
+	Select * 
+	From Temperature t
+	INNER JOIN Sensor s on s.SensorID = t.SensorID
+	WHERE s.CustomerID = @UserId and t.Date >= (Current_TimeStamp - @Hours)
+END
+
+
+
+CREATE PROC dbo.Average
+	@Hours				INT,
+	@receiptId			INT,
+	@UserId				VARCHAR,
+	@responseMessage	VARCHAR(250) OUTPUT
+
+AS 
+BEGIN
+	Select * 
+	From Receipt r
+	INNER JOIN ReceiptItem ri on ri.ReceiptId = r.ReceiptId
+	WHERE r.ReceiptCustomerId = @UserId --and r.ReceiptDate >= (Current_TimeStamp - @Hours)
+END
+
+
+-- average temp hours
+CREATE PROC dbo.AverageTemp
+	@UserID				INT NOT NULL,
+	@SensorID			INT NOT NULL,
+	@SearchStartTime	DateTime NOT NULL,
+	@SearchEndTime		DateTime NULL 
+
+AS
+Begin
+	IF @SearchEndTime IS NULL 
+
+	SELECT AVG(Temp) AS HourlyAverage, StartTime, EndTime
+	From (
+		SELECT TempID, StartTime, Temp, StartTime + '00:59:59' AS EndTime
+		   FROM (
+				 SELECT TempID, DATEADD(hh,DATEDIFF(hh,0,t.[Date]),0) AS StartTime, Temp, s.SensorID, s.UserID
+				   FROM Temperature t
+				   INNER JOIN Sensor s on  s.SensorID = t.SensorID
+				   Where s.SensorID = @SensorID and t.[Date] between @SearchStartTime and @SearchEndTime 
+				   Group By t.TempID, t.[Date], t.Temp, s.SensorID, s.UserID		  
+				) 
+				Temperature
+				INNER JOIN Sensor s on s.SensorID = Temperature.SensorId 
+		  GROUP BY TempID, StartTime, Temp 
+		)
+		Temperature
+	Where StartTime between StartTime and EndTime
+	Group BY StartTime, EndTime
+	Order By EndTime
+End 
 
 /* 
 Running the Proc's
 These are just example data being added to show that the proc's work, the real data will come from the front end/back end with user input,
 so the data added will be variable names, not string input.
 */
+
+--test average temp hours
+Exec dbo.AverageTemp
+	@UserID = 2,
+	@SensorID = 2,
+	@SearchStartTime = '2018-10-02',
+	@SearchEndTime = '2018/10/03'
+go
+
+
+
+declare @responseMessage VARCHAR(250)
+
+exec dbo.Average
+	
+		@Hours = 2,
+		@receiptId = 100001,
+		@UserId = 'c76',
+		--@responseMessage=@responseMessage OUTPUT
+GO
 
 -- executing the add user proc
 DECLARE @responseMessage VARCHAR(250)
