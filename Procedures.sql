@@ -259,6 +259,40 @@ Begin
 	Order By EndTime
 End 
 
+
+-- average Humidity hours
+CREATE PROC dbo.AverageHumidity
+	@UserID				INT NOT NULL,
+	@SensorID			INT NOT NULL,
+	@SearchStartTime	DateTime NOT NULL,
+	@SearchEndTime		DateTime NULL 
+
+AS
+Begin
+	IF @SearchEndTime IS NULL 
+
+	SELECT AVG(Humidity) AS HourlyAverage, StartTime, EndTime
+	From (
+		SELECT HumidityID, StartTime, Humidity, StartTime + '00:59:59' AS EndTime
+		   FROM (
+				 SELECT HumidityID, DATEADD(hh,DATEDIFF(hh,0,t.[Date]),0) AS StartTime, Humidity, s.SensorID, s.UserID
+				   FROM Humidity t
+				   INNER JOIN Sensor s on  s.SensorID = t.SensorID
+				   Where s.SensorID = @SensorID and t.[Date] between @SearchStartTime and @SearchEndTime 
+				   Group By t.HumidityID, t.[Date], t.Humidity, s.SensorID, s.UserID		  
+				) 
+				Humidity
+				INNER JOIN Sensor s on s.SensorID = Humidity.SensorId 
+		  GROUP BY HumidityID, StartTime, Humidity 
+		)
+		Humidity
+	Where StartTime between StartTime and EndTime
+	Group BY StartTime, EndTime
+	Order By EndTime
+End 
+
+
+
 /* 
 Running the Proc's
 These are just example data being added to show that the proc's work, the real data will come from the front end/back end with user input,
@@ -273,6 +307,13 @@ Exec dbo.AverageTemp
 	@SearchEndTime = '2018/10/03'
 go
 
+--test average Humidity hours
+Exec dbo.AverageHumidity
+	@UserID = 2,
+	@SensorID = 2,
+	@SearchStartTime = '2018-10-02',
+	@SearchEndTime = '2018/10/03'
+go
 
 
 declare @responseMessage VARCHAR(250)
