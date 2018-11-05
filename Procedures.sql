@@ -9,6 +9,7 @@ DROP PROC dbo.AddAdmin
 DROP PROC dbo.AddRoom
 DROP PROC dbo.UpdateUser
 Drop Proc dbo.AverageTemp
+Drop Proc dbo.MotionCount
 */
 
  /* Creating a new user */
@@ -230,14 +231,13 @@ END
 
 -- average temp hours
 CREATE PROC dbo.AverageTemp
-	@UserID				INT NOT NULL,
-	@SensorID			INT NOT NULL,
-	@SearchStartTime	DateTime NOT NULL,
-	@SearchEndTime		DateTime NULL 
+	@UserID				INT,
+	@SensorID			INT,
+	@SearchStartTime	DateTime,
+	@SearchEndTime		DateTime 
 
 AS
 Begin
-	IF @SearchEndTime IS NULL 
 
 	SELECT AVG(Temp) AS HourlyAverage, StartTime, EndTime
 	From (
@@ -262,14 +262,13 @@ End
 
 -- average Humidity hours
 CREATE PROC dbo.AverageHumidity
-	@UserID				INT NOT NULL,
-	@SensorID			INT NOT NULL,
-	@SearchStartTime	DateTime NOT NULL,
-	@SearchEndTime		DateTime NULL 
+	@UserID				INT,
+	@SensorID			INT,
+	@SearchStartTime	DateTime,
+	@SearchEndTime		DateTime 
 
 AS
 Begin
-	IF @SearchEndTime IS NULL 
 
 	SELECT AVG(Humidity) AS HourlyAverage, StartTime, EndTime
 	From (
@@ -286,6 +285,36 @@ Begin
 		  GROUP BY HumidityID, StartTime, Humidity 
 		)
 		Humidity
+	Where StartTime between StartTime and EndTime
+	Group BY StartTime, EndTime
+	Order By EndTime
+End 
+
+-- Count of motion per hour
+CREATE PROC dbo.MotionCount
+	@UserID				INT,
+	@SensorID			INT,
+	@SearchStartTime	DateTime,
+	@SearchEndTime		DateTime
+
+AS
+Begin
+	
+	SELECT Count(Motion) AS HourlyCount, StartTime, EndTime
+	From (
+		SELECT MotionID, StartTime, Motion, StartTime + '00:59:59' AS EndTime
+		   FROM (
+				 SELECT MotionID, DATEADD(hh,DATEDIFF(hh,0,m.[Date]),0) AS StartTime, Motion, s.SensorID, s.UserID
+				   FROM Motion m
+				   INNER JOIN Sensor s on  s.SensorID = m.SensorID
+				   Where s.SensorID = @SensorID and m.[Date] between @SearchStartTime and @SearchEndTime 
+				   Group By m.MotionID, m.[Date], m.Motion, s.SensorID, s.UserID		  
+				) 
+				Motion
+				INNER JOIN Sensor s on s.SensorID = Motion.SensorId 
+		  GROUP BY MotionID, StartTime, Motion 
+		)
+		Motion
 	Where StartTime between StartTime and EndTime
 	Group BY StartTime, EndTime
 	Order By EndTime
@@ -309,6 +338,14 @@ go
 
 --test average Humidity hours
 Exec dbo.AverageHumidity
+	@UserID = 2,
+	@SensorID = 2,
+	@SearchStartTime = '2018-10-02',
+	@SearchEndTime = '2018/10/03'
+go
+
+--test count of motion per hour
+Exec dbo.MotionCount
 	@UserID = 2,
 	@SensorID = 2,
 	@SearchStartTime = '2018-10-02',
