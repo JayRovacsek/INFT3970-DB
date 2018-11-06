@@ -229,98 +229,92 @@ BEGIN
 END
 
 
--- average temp hours
+-- AVERAGE TEMP HOURS
 CREATE PROC dbo.AverageTemp
-	@UserID				INT,
 	@SensorID			INT,
 	@SearchStartTime	DateTime,
 	@SearchEndTime		DateTime 
 
 AS
-Begin
+BEGIN
 
 	SELECT AVG(Temp) AS HourlyAverage, StartTime, EndTime
-	From (
+	FROM (
 		SELECT TempID, StartTime, Temp, StartTime + '00:59:59' AS EndTime
 		   FROM (
-				 SELECT TempID, DATEADD(hh,DATEDIFF(hh,0,t.[Date]),0) AS StartTime, Temp, s.SensorID, s.UserID
+				 SELECT TempID, DATEADD(hh,DATEDIFF(hh,0,t.[Date]),0) AS StartTime, Temp, s.SensorID
 				   FROM Temperature t
-				   INNER JOIN Sensor s on  s.SensorID = t.SensorID
-				   Where s.SensorID = @SensorID and t.[Date] between @SearchStartTime and @SearchEndTime 
-				   Group By t.TempID, t.[Date], t.Temp, s.SensorID, s.UserID		  
+				   INNER JOIN Sensor s ON  s.SensorID = t.SensorID
+				   WHERE s.SensorID = @SensorID AND t.[Date] BETWEEN @SearchStartTime AND @SearchEndTime 
+				   GROUP BY t.TempID, t.[Date], t.Temp, s.SensorID	  
 				) 
 				Temperature
-				INNER JOIN Sensor s on s.SensorID = Temperature.SensorId 
+				INNER JOIN Sensor s ON s.SensorID = Temperature.SensorId 
 		  GROUP BY TempID, StartTime, Temp 
 		)
 		Temperature
-	Where StartTime between StartTime and EndTime
-	Group BY StartTime, EndTime
-	Order By EndTime
-End 
+	WHERE StartTime BETWEEN StartTime AND EndTime
+	GROUP BY StartTime, EndTime
+	ORDER BY EndTime
+END 
+
+EXEC dbo.AverageTemp
+	@SensorID = 2,
+	@SearchStartTime = '2018-10-02',
+	@SearchEndTime = '2018/10/03'
+GO
 
 
 -- average Humidity hours
 CREATE PROC dbo.AverageHumidity
-	@UserID				INT,
 	@SensorID			INT,
 	@SearchStartTime	DateTime,
 	@SearchEndTime		DateTime 
-
 AS
-Begin
-
-	SELECT AVG(Humidity) AS HourlyAverage, StartTime, EndTime
-	From (
-		SELECT HumidityID, StartTime, Humidity, StartTime + '00:59:59' AS EndTime
-		   FROM (
+BEGIN
+	SELECT AVG(Humidity) AS HourlyAverage, StartTime, EndTime	FROM (
+		SELECT HumidityID, StartTime, Humidity, StartTime + '00:59:59' AS EndTime		   FROM (
 				 SELECT HumidityID, DATEADD(hh,DATEDIFF(hh,0,t.[Date]),0) AS StartTime, Humidity, s.SensorID, s.UserID
 				   FROM Humidity t
-				   INNER JOIN Sensor s on  s.SensorID = t.SensorID
-				   Where s.SensorID = @SensorID and t.[Date] between @SearchStartTime and @SearchEndTime 
-				   Group By t.HumidityID, t.[Date], t.Humidity, s.SensorID, s.UserID		  
+				   INNER JOIN Sensor s ON  s.SensorID = t.SensorID
+				   WHERE s.SensorID = @SensorID AND t.[Date] BETWEEN @SearchStartTime AND @SearchEndTime 
+				   GROUP BY t.HumidityID, t.[Date], t.Humidity, s.SensorID, s.UserID		  
 				) 
-				Humidity
-				INNER JOIN Sensor s on s.SensorID = Humidity.SensorId 
+				Humidity				INNER JOIN Sensor s ON s.SensorID = Humidity.SensorId 
 		  GROUP BY HumidityID, StartTime, Humidity 
 		)
 		Humidity
-	Where StartTime between StartTime and EndTime
-	Group BY StartTime, EndTime
-	Order By EndTime
-End 
+	WHERE StartTime BETWEEN StartTime AND EndTime
+	GROUP BY StartTime, EndTime
+	ORDER BY EndTime
+END 
 
 -- Count of motion per hour
 CREATE PROC dbo.MotionCount
-	@UserID				INT,
 	@SensorID			INT,
 	@SearchStartTime	DateTime,
 	@SearchEndTime		DateTime
-
 AS
-Begin
-	
+BEGIN
 	SELECT Count(Motion) AS HourlyCount, StartTime, EndTime
-	From (
+	FROM (
 		SELECT MotionID, StartTime, Motion, StartTime + '00:59:59' AS EndTime
 		   FROM (
 				 SELECT MotionID, DATEADD(hh,DATEDIFF(hh,0,m.[Date]),0) AS StartTime, Motion, s.SensorID, s.UserID
 				   FROM Motion m
-				   INNER JOIN Sensor s on  s.SensorID = m.SensorID
-				   Where s.SensorID = @SensorID and m.[Date] between @SearchStartTime and @SearchEndTime 
-				   Group By m.MotionID, m.[Date], m.Motion, s.SensorID, s.UserID		  
+				   INNER JOIN Sensor s ON  s.SensorID = m.SensorID
+				   WHERE s.SensorID = @SensorID AND m.[Date] BETWEEN @SearchStartTime and @SearchEndTime 
+				   GROUP BY m.MotionID, m.[Date], m.Motion, s.SensorID, s.UserID		  
 				) 
 				Motion
-				INNER JOIN Sensor s on s.SensorID = Motion.SensorId 
+				INNER JOIN Sensor s ON s.SensorID = Motion.SensorId 
 		  GROUP BY MotionID, StartTime, Motion 
 		)
 		Motion
-	Where StartTime between StartTime and EndTime
-	Group BY StartTime, EndTime
-	Order By EndTime
-End 
-
-
+	WHERE StartTime between StartTime and EndTime
+	GROUP BY StartTime, EndTime
+	ORDER BY EndTime
+END 
 
 /* 
 Running the Proc's
@@ -330,27 +324,24 @@ so the data added will be variable names, not string input.
 
 --test average temp hours
 Exec dbo.AverageTemp
-	@UserID = 2,
 	@SensorID = 2,
 	@SearchStartTime = '2018-10-02',
 	@SearchEndTime = '2018/10/03'
 go
 
 --test average Humidity hours
-Exec dbo.AverageHumidity
-	@UserID = 2,
+EXEC dbo.AverageHumidity
 	@SensorID = 2,
 	@SearchStartTime = '2018-10-02',
 	@SearchEndTime = '2018/10/03'
-go
+GO
 
 --test count of motion per hour
 Exec dbo.MotionCount
-	@UserID = 2,
 	@SensorID = 2,
 	@SearchStartTime = '2018-10-02',
 	@SearchEndTime = '2018/10/03'
-go
+GO
 
 
 declare @responseMessage VARCHAR(250)
