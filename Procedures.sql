@@ -1,5 +1,6 @@
 
-/* DROPPING PROCS
+/* These drop each of the different Procedures from the database
+
 DROP PROC dbo.AddUser
 DROP PROC dbo.UserLogin
 DROP PROC dbo.UpdatingUserPassword
@@ -10,9 +11,14 @@ DROP PROC dbo.AddRoom
 DROP PROC dbo.UpdateUser
 Drop Proc dbo.AverageTemp
 Drop Proc dbo.MotionCount
+
 */
 
- /* Creating a new user */
+/* This Proc creates a new user into the database
+all the required information is gathered from the webpage and then this Proc is run to insert it into the database
+It first inserts into the User and UserAddress table, then changes the password given to be salted and hashed before being saved into the database
+The User's unencrypted password is never saved into the database for security 
+*/
 CREATE PROC dbo.AddUser
 	@fName			 VARCHAR(40), 
     @lName			 VARCHAR(40), 
@@ -44,7 +50,10 @@ BEGIN
 END
 GO
 
---Updating a users Password
+/* This Proc Changes a User or Admins password and changes it in the database
+It first checks to see if the email address provided matches any in the database, if not it will display an error.
+If the email address is in the database, This Proc takes the new password and salt's and hashes it before saving it into the database
+*/
 CREATE PROC dbo.UpdatingUserPassword
 	@Email			 VARCHAR(50),
 	@Password		 VARCHAR(256),
@@ -67,7 +76,7 @@ BEGIN
 END
 GO
 
---Updating a User to be an Admin
+--This Proc Changes a User to be an admin
 CREATE PROC dbo.AddAdmin
 	@Email			 VARCHAR(50),
 	@IsAdmin		 CHAR(1),
@@ -89,7 +98,11 @@ BEGIN
 END
 GO
 
---Logging in a user 
+/* This Proc Log's in a User to the website
+It checks to see if the email provided is in the database,
+if so, it salts and hashes the password given and checks to see if its the same as the password in the database,
+if so, it logs the user in.
+*/
 CREATE PROC dbo.UserLogin
 	@Email			 VARCHAR(50),
 	@Password		 VARCHAR(256),
@@ -112,7 +125,7 @@ BEGIN
 END
 GO
 
---Creating a new sensor 
+--This Proc Add's a new Sensor to the database
 CREATE PROC dbo.AddSensor
 	@UserID			 INT,
 	@Name			 VARCHAR(50),
@@ -130,7 +143,7 @@ BEGIN
 END
 GO
 
---Creating a new Room
+--This Proc Add's a new Room to the database
 CREATE PROC dbo.AddRoom
 	@Name			 VARCHAR(50),
 	@Description	 VARCHAR(200),
@@ -148,7 +161,7 @@ BEGIN
 END
 GO
 
--- Modifying a Sensor
+--This Proc Modifies a Sensor's details in the database
 CREATE PROC dbo.ModifySensor
 	@sensorID		 INT,
 	@UserID			 INT,
@@ -167,7 +180,7 @@ BEGIN
 END
 GO
 
--- Update User Details 
+--This Proc Modifies a User's details in the database
 CREATE PROC dbo.UpdateUser
 	@UserID			 INT,
 	@fName			 VARCHAR(40), 
@@ -315,112 +328,3 @@ BEGIN
 	GROUP BY StartTime, EndTime
 	ORDER BY EndTime
 END 
-
-/* 
-Running the Proc's
-These are just example data being added to show that the proc's work, the real data will come from the front end/back end with user input,
-so the data added will be variable names, not string input.
-*/
-
---test average temp hours
-Exec dbo.AverageTemp
-	@SensorID = 2,
-	@SearchStartTime = '2018-10-02',
-	@SearchEndTime = '2018/10/03'
-go
-
---test average Humidity hours
-EXEC dbo.AverageHumidity
-	@SensorID = 2,
-	@SearchStartTime = '2018-10-02',
-	@SearchEndTime = '2018/10/03'
-GO
-
---test count of motion per hour
-Exec dbo.MotionCount
-	@SensorID = 2,
-	@SearchStartTime = '2018-10-02',
-	@SearchEndTime = '2018/10/03'
-GO
-
-
-declare @responseMessage VARCHAR(250)
-
-exec dbo.Average
-	
-		@Hours = 2,
-		@receiptId = 100001,
-		@UserId = 'c76',
-		--@responseMessage=@responseMessage OUTPUT
-GO
-
--- executing the add user proc
-DECLARE @responseMessage VARCHAR(250)
-
-EXEC dbo.AddUser
-
-		@fName = 'Josh', 
-		@lName = 'Brown', 
-		@ContactNumber = '123456789',
-		@Email = 'mr_123@hotmail.com',
-		@StreetNum = '10',
-		@StreetName	 = 'dad',
-		@City = 'newy',
-		@State = 'nsw',
-		@Postcode = '2233',
-		@Country = 'aust',
-		@HashedPassword	= 'browny20323',
-        @responseMessage=@responseMessage OUTPUT
-GO
-
---executing the login proc
-DECLARE @responseMessage VARCHAR(250)
-
-EXEC dbo.UserLogin
-
-	@Email = 'mr_123@hotmail.com',
-	@Password = 'browny20323',	 
-	@responseMessage=@responseMessage OUTPUT
-GO
-
---Executing the Update password proc
-DECLARE @responseMessage VARCHAR(250)
-
-EXEC dbo.UpdatingUserPassword
-
-	@Email	= 'Browny@hotmail.com',
-	@Password = '1234',
-	@responseMessage=@responseMessage OUTPUT
-GO
-
---Executing the Adding Sensor proc
-DECLARE @responseMessage VARCHAR(250)
-
-EXEC dbo.AddSensor
-	@UserID	='1',		 
-	@Name = 'Sensor 1',
-	@Description = 'This is the first sensor, being placed in the study room',
-	@RoomID	= '2',
-	@responseMessage=@responseMessage OUTPUT
-GO
-
---Executing the Update Sensor proc
-DECLARE @responseMessage VARCHAR(250)
-
-EXEC dbo.ModifySensor
-	@SensorID = '1',	
-	@UserID	='1',		 
-	@Name = 'Sensor 1',
-	@Description = 'This is the first sensor, being placed in the Lounge Room',
-	@RoomID	= '3',
-	@responseMessage=@responseMessage OUTPUT
-GO
-
---Executing the Add Admin proc
-DECLARE @responseMessage VARCHAR(250)
-
-EXEC dbo.AddAdmin
-	@Email = 'mr_123@hotmail.com',
-	@IsAdmin = 'Y',
-	@responseMessage=@responseMessage OUTPUT
-GO

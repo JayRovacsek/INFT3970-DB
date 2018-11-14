@@ -1,4 +1,4 @@
-/*
+/* These drop each of the different Tables from the database
 
 DROP TABLE UsersAddress
 DROP TABLE UsersPassword
@@ -11,7 +11,7 @@ DROP TABLE Users
 
 */
 
---This creates the User table for both Admins and Customers
+--This creates the User's personal information table for both Admins and Customers
 CREATE TABLE Users (
 UserID		INT PRIMARY KEY NOT NULL IDENTITY(1,1),
 fName			VARCHAR(40) NOT NULL,
@@ -23,6 +23,7 @@ IsAdmin			CHAR(1) NOT NULL DEFAULT('N')
 )
 GO
 
+--This creates the address table for both Admins and Customers
 CREATE TABLE UsersAddress (
 UserID	    INT PRIMARY KEY NOT NULL,
 StreetNum		VARCHAR(10) NOT NULL,
@@ -35,6 +36,7 @@ foreign key (UserID) references Users (UserID) ON UPDATE CASCADE ON DELETE NO AC
 )
 GO
 
+--This creates the Password table for both Admins and Customers
 CREATE TABLE UsersPassword (
 UserID		INT PRIMARY KEY NOT NULL,
 HashedPassword	BINARY(256) NOT NULL,
@@ -43,6 +45,7 @@ foreign key (UserID) references Users (UserID) ON UPDATE CASCADE ON DELETE NO AC
 )
 GO
 
+--This creates the Room table, each room is a category that can be linked to a sensor
 CREATE TABLE Room (
 RoomID INT PRIMARY KEY NOT NULL,
 Name VARCHAR(50),
@@ -50,6 +53,7 @@ Description VARCHAR(200)
 )
 GO
 
+--This creates the Sensor table, all information about the sensor and the user it is assigned to is stored here
 CREATE TABLE Sensor (
 SensorID	INT PRIMARY KEY NOT NULL IDENTITY(1,1),
 UserID		INT,
@@ -61,6 +65,7 @@ Foreign Key (RoomID) References Room (RoomID) ON UPDATE CASCADE ON DELETE NO ACT
 )
 GO
 
+--This creates the Temperature table, This stores all the temperature data from each different sensor
 CREATE TABLE Temperature (
 TempID INT IDENTITY(1,1) NOT NULL,
 SensorID	INT NOT NULL,
@@ -70,6 +75,7 @@ Foreign Key (SensorID) References Sensor (SensorID) ON UPDATE CASCADE ON DELETE 
 )
 GO
 
+--This creates the Humidity table, This stores all the Humidity data from each different sensor
 CREATE TABLE Humidity (
 HumidityID INT IDENTITY(1,1) NOT NULL,
 SensorID	INT NOT NULL,
@@ -79,6 +85,7 @@ Foreign Key (SensorID) References Sensor (SensorID) ON UPDATE CASCADE ON DELETE 
 )
 GO
 
+--This creates the Motion table, This stores all the Motion data from each different sensor
 CREATE TABLE Motion (
 MotionID INT IDENTITY(1,1) NOT NULL,
 SensorID	INT NOT NULL,
@@ -88,6 +95,3 @@ Foreign Key (SensorID) References Sensor (SensorID) ON UPDATE CASCADE ON DELETE 
 )
 GO
 
-INSERT INTO Room VALUES ('1', 'Kitchen', 'This is the main kitchen room for a household')
-INSERT INTO Room VALUES ('2', 'Study', 'This is the main Study room for a household')
-INSERT INTO Room VALUES ('3', 'Lounge', 'This is the main Lounge room for a household')
