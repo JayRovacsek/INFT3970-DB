@@ -1,4 +1,4 @@
---sql query for obtaining Temperature predictions
+--sql query for obtaining Temperature predictions. this predicts 7 days worth of data for temperature based upon the previous 7 days worht of data. the prediction is per hour for the specified sensor. 
 declare @SearchEndTime datetime;
 set @SearchEndTime = CURRENT_TIMESTAMP 
 declare @SearchStartTime datetime;
@@ -46,13 +46,13 @@ set @SearchStartTime = DATEADD(week,-1,@SearchEndTime)
 			Order by StartTime
 
 				
----- sql query for obtaing humidity predictions
+---- sql query for obtaing humidity predictions. this predicts 7 days worth of data for humidity based upon the previous 7 days worth of data. the prediction is per hour for the specified sensor.
 DECLARE @SearchEndTime datetime;
 SET @SearchEndTime = CURRENT_TIMESTAMP 
 DECLARE @SearchStartTime datetime;
 SET @SearchStartTime = DATEADD(week,-1,@SearchEndTime)
 
-SELECT StartTime, PredictedValue = Case when PredictedValue1 >= 100 then 95 when PredictedValue1 < 100 then PredictedValue1 end 
+SELECT StartTime, PredictedValue = Case when PredictedValue1 >= 100 then 99 when PredictedValue1 < 100 then PredictedValue1 end 
 From (
 	SELECT StartTime, LAG(PredictedValue, 1, PredictedValue) OVER (ORDER BY StartTime) + (LAG(PredictedValue, 1, 0) OVER (ORDER BY StartTime) * (PercentChange)) as PredictedValue1
 	FROM (

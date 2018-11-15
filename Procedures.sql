@@ -208,41 +208,8 @@ BEGIN
 END
 GO
 
-drop proc dbo.Average 
 
--- averaging scores
-CREATE PROC dbo.Average
-	@Hours				INT,
-	@SensorId			INT,
-	@UserId				INT,
-	@responseMessage	VARCHAR(250) OUTPUT
-
-AS 
-BEGIN
-	Select * 
-	From Temperature t
-	INNER JOIN Sensor s on s.SensorID = t.SensorID
-	WHERE s.CustomerID = @UserId and t.Date >= (Current_TimeStamp - @Hours)
-END
-
-
-
-CREATE PROC dbo.Average
-	@Hours				INT,
-	@receiptId			INT,
-	@UserId				VARCHAR,
-	@responseMessage	VARCHAR(250) OUTPUT
-
-AS 
-BEGIN
-	Select * 
-	From Receipt r
-	INNER JOIN ReceiptItem ri on ri.ReceiptId = r.ReceiptId
-	WHERE r.ReceiptCustomerId = @UserId --and r.ReceiptDate >= (Current_TimeStamp - @Hours)
-END
-
-
--- AVERAGE TEMP HOURS
+-- AVERAGE TEMP HOURS. this Proc retreive all data between 2 dates for the specified sensorID and gets averages of the data per hour
 CREATE PROC dbo.AverageTemp
 	@SensorID			INT,
 	@SearchStartTime	DateTime,
@@ -278,7 +245,7 @@ EXEC dbo.AverageTemp
 GO
 
 
--- average Humidity hours
+-- average Humidity hours. this Proc retreive all data between 2 dates for the specified sensorID and gets averages of the data per hour
 CREATE PROC dbo.AverageHumidity
 	@SensorID			INT,
 	@SearchStartTime	DateTime,
@@ -302,7 +269,7 @@ BEGIN
 	ORDER BY EndTime
 END 
 
--- Count of motion per hour
+-- Count of motion per hour. this Proc retreives all data between 2 dates for the specified sensorID and gets the count of how many times motion was detected per hour. 
 CREATE PROC dbo.MotionCount
 	@SensorID			INT,
 	@SearchStartTime	DateTime,
